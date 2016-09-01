@@ -15,12 +15,11 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
 
 	cv::Mat img = cv_bridge::toCvShare(msg, "bgr8")->image;
-   	std_msgs::Header h = msg->header;
-
-std::stringstream ss;
-ss << h.stamp;
-std::string ts = ss.str();
-    cv::putText(img, ts, cv::Point(10,10), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(94.0, 206.0, 165.0, 0.0))	;
+  std_msgs::Header h = msg->header;
+  std::stringstream ss;
+  ss << "Time: " << h.stamp << " Frame: " << h.seq;
+  std::string ts = ss.str();
+  cv::putText(img, ts, cv::Point(10,10), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(94.0, 206.0, 165.0, 0.0))	;
   	try
   	{
   	  cv::imshow("view", img);
