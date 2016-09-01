@@ -29,9 +29,10 @@ Since is the first time, run:
 sudo rosdep init
 rosdep update
 ```
-To install package directly from command line (this allows you to run apt-get install ros-<packagename> in the default workspace):
+To install package directly from command line (this allows you to run apt-get install ros-<packagename> in the default workspace) and also install catkin:
 ```sh
 sudo apt-get install python-rosinstall
+sudo apt-get install catkin
 ```
 Now, we create a ros workspace, idealy in your home folder:
 ```sh
