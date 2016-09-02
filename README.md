@@ -45,7 +45,7 @@ source devel/setup.bash
 ```
 The  `catkin_make ` command build all the packages that are in the catkin_ws/src folder. We source `devel/setup.bash` to add our new workspace to $ROS_PACKAGE_PATH enviroment variable. We might want to have the configuration to be charge always we open a new bash session:
 ```sh
-echo "source /home/<username>/catkin_ws/devel/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 We also might have permission troubles with directories. For not hav any issue, give to your user all permission over /.ros directory:
