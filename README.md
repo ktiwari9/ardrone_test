@@ -64,11 +64,14 @@ cd ~/catkin_ws/src
 git clone https://github.com/AutonomyLab/ardrone_autonomy.git
 cd ..
 rosdep install --from-paths src -i
-catkin_make
 ```
-If the error 'ROS distro is not set' appear, you should add rosdistro option:
+If the error 'ROS distro is not set' appear, you should add --rosdistro option:
 ```sh
 rosdep install --from-paths src -i --rosdistro=kinetic
+```
+If no errors appear, continue with
+```sh
+catkin_make
 ```
 The build process should end with no errors. If there is any, you should verify if you are working in the correct workspace:
 ```sh
