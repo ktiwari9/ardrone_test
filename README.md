@@ -66,6 +66,10 @@ cd ..
 rosdep install --from-paths src -i
 catkin_make
 ```
+If the error 'ROS distro is not set' appear, you should add rosdistro option:
+```sh
+rosdep install --from-paths src -i --rosdistro=kinetic
+```
 The build process should end with no errors. If there is any, you should verify if you are working in the correct workspace:
 ```sh
 echo $ROS_PACKAGE_PATH
