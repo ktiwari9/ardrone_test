@@ -45,7 +45,7 @@ source devel/setup.bash
 ```
 The  `catkin_make ` command build all the packages that are in the catkin_ws/src folder. We source `devel/setup.bash` to add our new workspace to $ROS_PACKAGE_PATH enviroment variable. We might want to have the configuration to be charge always we open a new bash session:
 ```sh
-echo "source /home/<username>/catkin_ws/devel/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 We also might have permission troubles with directories. For not hav any issue, give to your user all permission over /.ros directory:
@@ -64,6 +64,13 @@ cd ~/catkin_ws/src
 git clone https://github.com/AutonomyLab/ardrone_autonomy.git
 cd ..
 rosdep install --from-paths src -i
+```
+If the error 'ROS distro is not set' appear, you should add --rosdistro option:
+```sh
+rosdep install --from-paths src -i --rosdistro=kinetic
+```
+If no errors appear, continue with
+```sh
 catkin_make
 ```
 The build process should end with no errors. If there is any, you should verify if you are working in the correct workspace:
