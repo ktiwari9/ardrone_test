@@ -1,7 +1,6 @@
 #ifndef ARDRONE_TEST_H
 #define ARDRONE_TEST_H
 
-
 /* Include Section */
 #include <ros/ros.h>
 #include "std_msgs/String.h"
@@ -21,6 +20,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QApplication>
+#include <QDebug>
 
 /* Callback functions*/
 void imageCallback(const sensor_msgs::ImageConstPtr& msg);
@@ -28,11 +28,12 @@ void navdataCallback(const ardrone_autonomy::Navdata& data);
 
 /*Class definitions*/
 
-class keyboard_controller 
+class keyboard_controller : public QWidget
 {
 	public:
 		keyboard_controller(ros::NodeHandle &node);
-		void movement(QKeyEvent * key);
+		~keyboard_controller() {};
+		void keyPressEvent(QKeyEvent* e);
 
 	private:
 		geometry_msgs::Twist twist_msg;
@@ -42,6 +43,7 @@ class keyboard_controller
 		ros::Publisher pub_empty_takeoff;
 		ros::Publisher pub_empty_reset;
 };
+
 
 #endif
 

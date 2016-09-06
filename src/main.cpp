@@ -13,13 +13,16 @@ int main(int argc, char **argv)
   ros::Subscriber nav = n.subscribe("ardrone/navdata", 1, navdataCallback);
   
 
+  QApplication app(argc, argv);
   keyboard_controller *test = new keyboard_controller(n);
+  test->setWindowTitle(QString::fromUtf8("Press Key with window on"));
+  test->resize(336, 227);
+  test->show();
+  app.exec();
 
-  while(flag){
-    std::cout << "Key event working!" << std::endl;
-  }
+
   ros::spin();
   cv::destroyWindow("view");
-  return 0;
+  
 
 }
