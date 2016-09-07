@@ -21,10 +21,7 @@
 #include <QMessageBox>
 #include <QApplication>
 #include <QDebug>
-
-/* Callback functions*/
-void imageCallback(const sensor_msgs::ImageConstPtr& msg);
-void navdataCallback(const ardrone_autonomy::Navdata& data);
+#include <pthread.h>
 
 /*Class definitions*/
 
@@ -43,6 +40,18 @@ class keyboard_controller : public QWidget
 		ros::Publisher pub_empty_takeoff;
 		ros::Publisher pub_empty_reset;
 };
+
+struct keyboard_struct {
+    keyboard_controller *arg1;
+    QApplication *arg2;
+};
+
+/* Callback functions*/
+void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+void navdataCallback(const ardrone_autonomy::Navdata& data);
+void *keyboard_thread(void *arguments);
+int keyboard_thread_init(keyboard_controller *control, QApplication *app);
+
 
 
 #endif
