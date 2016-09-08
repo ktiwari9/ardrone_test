@@ -2,6 +2,7 @@
 #define ARDRONE_TEST_H
 
 /* Include Section */
+
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 #include "ardrone_autonomy/Navdata.h"
@@ -23,13 +24,20 @@
 #include <QDebug>
 #include <pthread.h>
 
-/*Class definitions*/
+/*Class definitions */
 
+
+/**
+ *	@brief Class to handle the keyboard controller
+ *	
+ *	This class is derived from QWidget class, for further 
+ *	reference go to http://doc.qt.io/qt-4.8/qwidget.html
+*/
 class keyboard_controller : public QWidget
 {
 	public:
 		keyboard_controller(ros::NodeHandle &node);
-		~keyboard_controller() {};
+		~keyboard_controller(void);
 		void keyPressEvent(QKeyEvent* e);
 
 	private:
@@ -41,12 +49,15 @@ class keyboard_controller : public QWidget
 		ros::Publisher pub_empty_reset;
 };
 
+/**
+ *	@brief Structure to handle the KB controller and image display.
+*/
 struct keyboard_struct {
-    keyboard_controller *arg1;
-    QApplication *arg2;
+    keyboard_controller *arg1; /**< Pointer to keyboard_controller class */
+    QApplication *arg2; /**< Pointer to QApplication class, for further reference go to http://doc.qt.io/qt-5/qapplication.html*/
 };
 
-/* Callback functions*/
+/* Callback functions */
 void imageCallback(const sensor_msgs::ImageConstPtr& msg);
 void navdataCallback(const ardrone_autonomy::Navdata& data);
 void *keyboard_thread(void *arguments);

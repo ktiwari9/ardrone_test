@@ -5,8 +5,18 @@ static geometry_msgs::Twist hover;
 
 
 bool flag = 0;
+
+/**
+ *	@brief Constructor
+ *
+ *	When a keyboard_controlled is constructed, it creates some ros::Publisher classes and
+ *	set some messages.
+
+ *	@param node Takes the pointer to a ros::NodeHandle class in which will be advertised 
+ *	some topics ("/cmd_vel", "/ardrone/takeoff", "/ardrone/land" and "/ardrone/reset" topics).
+*/
 keyboard_controller::keyboard_controller(ros::NodeHandle &node){
-	pub_twist = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1); 
+	pub_twist = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 	pub_empty_takeoff = node.advertise<std_msgs::Empty>("/ardrone/takeoff", 1); 
 	pub_empty_land = node.advertise<std_msgs::Empty>("/ardrone/land", 1);
 	pub_empty_reset = node.advertise<std_msgs::Empty>("/ardrone/reset", 1); 
@@ -25,6 +35,23 @@ keyboard_controller::keyboard_controller(ros::NodeHandle &node){
 
 }
 
+/**
+ *	@brief Destructor
+ *
+ *	Do nothing.
+*/
+keyboard_controller::~keyboard_controller(void){}
+
+/**
+ *	@brief Handle the Key Press Event
+ *
+ *	This function maps the key pressed and publish the corresponding message
+ *
+ *	@param key Take the pointer to QKeyEvent class
+ *	@see http://doc.qt.io/qt-5/qkeyevent.html
+ *	@todo Documment switch case
+ *
+*/
 void keyboard_controller::keyPressEvent(QKeyEvent * key){
 	switch(key->key()){
 		case Qt::Key_Z:
@@ -37,6 +64,11 @@ void keyboard_controller::keyPressEvent(QKeyEvent * key){
 	}
 }
 
+/**
+ *	@brief This function create the QApplication window thread
+ *
+ *	@todo argument, detailed description
+*/
 void *keyboard_thread(void *arguments){
   	struct keyboard_struct *args = (struct keyboard_struct *)arguments;
   	args->arg1->resize(336, 227);
@@ -46,6 +78,11 @@ void *keyboard_thread(void *arguments){
   	return NULL;
 }
 
+/**
+ *	@brief This function initialize the full keyboard controller thread
+ *
+ *	@todo arguments, return, detailed description
+*/
 int keyboard_thread_init(keyboard_controller *control, QApplication *app){
 	struct keyboard_struct *args = new keyboard_struct();
   	args->arg1 = control;
