@@ -1,4 +1,5 @@
 #include "ardrone_test.h"
+#include "keyboard_controller.moc"
 
 static geometry_msgs::Twist hover;
 
@@ -71,10 +72,11 @@ void keyboard_controller::keyPressEvent(QKeyEvent * key){
 */
 void *keyboard_thread(void *arguments){
   	struct keyboard_struct *args = (struct keyboard_struct *)arguments;
-  	args->arg1->resize(336, 227);
-  	args->arg1->show();
-  	args->arg1->setWindowTitle(QString::fromUtf8("Press Key with te windows selected"));
-  	args->arg2->exec();
+  QApplication app(args->argc, args->argv);
+  QMainWindow w;
+  w.show();
+  app.exec();
+  pthread_exit(NULL);
   	return NULL;
 }
 
@@ -83,18 +85,11 @@ void *keyboard_thread(void *arguments){
  *
  *	@todo arguments, return, detailed description
 */
-int keyboard_thread_init(keyboard_controller *control, QApplication *app){
-	struct keyboard_struct *args = new keyboard_struct();
-  	args->arg1 = control;
-  	args->arg2 = app;
+int keyboard_thread_init(keyboard_struct *args){ 
   	pthread_t thread_pointer;
   	if(pthread_create(&thread_pointer, NULL, keyboard_thread, args)) {
 		return 1;
   	}
-	
-	
-  	ros::spin();
-  	cv::destroyWindow("view");
 	
   	if(pthread_join(thread_pointer, NULL)) {
   	  	return 2;

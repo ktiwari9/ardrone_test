@@ -54,14 +54,15 @@ class keyboard_controller : public QWidget
 */
 struct keyboard_struct {
     keyboard_controller *arg1; /**< Pointer to keyboard_controller class */
-    QApplication *arg2; /**< Pointer to QApplication class, for further reference go to http://doc.qt.io/qt-5/qapplication.html*/
+	int argc;
+	char **argv;	
 };
 
 /* Callback functions */
 void imageCallback(const sensor_msgs::ImageConstPtr& msg);
 void navdataCallback(const ardrone_autonomy::Navdata& data);
 void *keyboard_thread(void *arguments);
-int keyboard_thread_init(keyboard_controller *control, QApplication *app);
+int keyboard_thread_init(keyboard_struct *args);
 
 
 
