@@ -21,7 +21,6 @@
 #include <QMessageBox>
 #include <QApplication>
 
-
 /*Definitions*/
 
 #define LANDED 		0;
@@ -41,8 +40,10 @@
 class keyboard_controller : public QWidget
 {	//Q_OBJECT
 	public:
-		keyboard_controller(ros::NodeHandle &node);
+		keyboard_controller(ros::NodeHandle node);
 		~keyboard_controller(void);
+		void imageCallback(const sensor_msgs::ImageConstPtr& msg);
+		void navdataCallback(const ardrone_autonomy::Navdata& data);
 
 	private:
 		int status;
@@ -55,9 +56,5 @@ class keyboard_controller : public QWidget
 		void keyPressEvent(QKeyEvent* e);
 		void keyReleaseEvent(QKeyEvent *key);
 };
-
-/* Callback functions */
-void imageCallback(const sensor_msgs::ImageConstPtr& msg);
-void navdataCallback(const ardrone_autonomy::Navdata& data);
 
 #endif

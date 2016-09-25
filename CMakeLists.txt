@@ -27,7 +27,7 @@ include_directories(
 
 
 
-add_executable(main src/main.cpp src/image_navdata_handler.cpp src/keyboard_controller.cpp)
+add_executable(main src/main.cpp src/keyboard_controller.cpp)
 
 target_link_libraries(
   main ${catkin_LIBRARIES}
