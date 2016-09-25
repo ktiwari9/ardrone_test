@@ -32,7 +32,7 @@ void navdataCallback(const ardrone_autonomy::Navdata& data){
 	std::cout << "Aceleracion lineal: ax: " << data.ax << "ay: " << data.ay << "az: " << data.az <<std::endl;
 	std::cout << "Time stamp: " << data.tm << std::endl;
 
-	std::cout << std::string(30, '\n');
+	std::cout << std::string(25, '\n');
 }
 
 

@@ -9,16 +9,13 @@ int main(int argc, char **argv)
   image_transport::Subscriber sub = it.subscribe("ardrone/image_raw", 1, imageCallback);
   ros::Subscriber nav = n.subscribe("ardrone/navdata", 1, navdataCallback);
 
-  QApplication app(argc, argv);
 
+  QApplication app(argc,argv);
   keyboard_controller *control = new keyboard_controller(n);
-  keyboard_struct *args = new keyboard_struct(); 
-  args->arg1 = control;
-  args->argc = argc;
-  args->argv = argv;
-  keyboard_thread_init(args);
+  control->show();
+  
   
   ros::spin();
 
-  return 0;
+  return app.exec();
 }

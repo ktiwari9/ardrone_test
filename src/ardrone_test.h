@@ -15,56 +15,49 @@
 #include <cv_bridge/cv_bridge.h>
 #include <iostream>
 #include <string>
-#include <ctime>
 #include <sstream>
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QApplication>
-#include <QDebug>
-#include <pthread.h>
+
+
+/*Definitions*/
+
+#define LANDED 		0;
+#define TAKINGOFF 	1;
+#define LANDING 	2;
+#define HOVERING 	3;
+#define UNKNOW 		4;
 
 /*Class definitions */
-
-
 /**
  *	@brief Class to handle the keyboard controller
  *	
  *	This class is derived from QWidget class, for further 
  *	reference go to http://doc.qt.io/qt-4.8/qwidget.html
 */
+
 class keyboard_controller : public QWidget
-{
+{	//Q_OBJECT
 	public:
 		keyboard_controller(ros::NodeHandle &node);
 		~keyboard_controller(void);
-		void keyPressEvent(QKeyEvent* e);
 
 	private:
+		int status;
 		geometry_msgs::Twist twist_msg;
 		std_msgs::Empty emp_msg;
 		ros::Publisher pub_empty_land;
 		ros::Publisher pub_twist;
 		ros::Publisher pub_empty_takeoff;
 		ros::Publisher pub_empty_reset;
-};
-
-/**
- *	@brief Structure to handle the KB controller and image display.
-*/
-struct keyboard_struct {
-    keyboard_controller *arg1; /**< Pointer to keyboard_controller class */
-	int argc;
-	char **argv;	
+		void keyPressEvent(QKeyEvent* e);
+		void keyReleaseEvent(QKeyEvent *key);
 };
 
 /* Callback functions */
 void imageCallback(const sensor_msgs::ImageConstPtr& msg);
 void navdataCallback(const ardrone_autonomy::Navdata& data);
-void *keyboard_thread(void *arguments);
-int keyboard_thread_init(keyboard_struct *args);
-
-
 
 #endif
-
