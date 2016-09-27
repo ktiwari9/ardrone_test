@@ -23,11 +23,16 @@
 
 /*Definitions*/
 
-#define LANDED 		0;
-#define TAKINGOFF 	1;
-#define LANDING 	2;
-#define HOVERING 	3;
-#define UNKNOW 		4;
+
+#define UNKNOW 		0
+#define INITED		1
+#define LANDED 		2
+#define FLYING 		3
+#define HOVERING	4
+#define TEST 		5
+#define TAKINGOFF	6
+#define FLYING2		7
+#define LOOPING		8
 
 /*Class definitions */
 /**
@@ -46,7 +51,8 @@ class keyboard_controller : public QWidget
 		void navdataCallback(const ardrone_autonomy::Navdata& data);
 
 	private:
-		int status;
+		int state;
+		float velocity;
 		geometry_msgs::Twist twist_msg;
 		std_msgs::Empty emp_msg;
 		ros::Publisher pub_empty_land;
