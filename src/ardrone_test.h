@@ -49,6 +49,7 @@ class keyboard_controller : public QWidget
 		~keyboard_controller(void);
 		void imageCallback(const sensor_msgs::ImageConstPtr& msg);
 		void navdataCallback(const ardrone_autonomy::Navdata& data);
+		void navdataGPSCallback(const ardrone_autonomy::Navdata_gps& data);
 
 	private:
 		int state;

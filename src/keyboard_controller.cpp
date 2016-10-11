@@ -6,7 +6,7 @@ static geometry_msgs::Twist hover;
 /**
  *	@brief Constructor
  *
- *	When a keyboard_controlled is constructed, it creates some ros::Publisher classes and
+ *	When a keyboard_controller is constructed, it creates some ros::Publisher classes and
  *	set some messages.
 
  *	@param node Takes the pointer to a ros::NodeHandle class in which will be advertised 
@@ -58,12 +58,12 @@ void keyboard_controller::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 	cv::putText(img, ts, cv::Point(10,10), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(94.0, 206.0, 165.0, 0.0))	;
 	try
 	{
-	  cv::imshow("view", img);
-	  cv::waitKey(30);
+		cv::imshow("view", img);
+		cv::waitKey(30);
 	}
 	catch (cv_bridge::Exception& e)
 	{
-	  ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
+		ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
 	}
 }
 
@@ -90,6 +90,16 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
 	state = data.state;
 }
 
+/* NOT TESTED
+void keyboard_controller::navdataGPSCallback(const ardrone_autonomy::Navdata_gps& data){
+	std::cout << "Longitude: " << data->longitude << std::endl;
+	std::cout << "Latitude: " << data->latitude << std::endl;
+	std::cout << "Elevation: " << data->elevation << std::endl;
+
+	std::cout << std::string(25, '\n');
+}
+*/
+
 /**
  *	@brief Handle the Key Press Event
  *
@@ -104,19 +114,19 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 		case Qt::Key_Z:			//Take off
 			/// - key Z : Take off \n
 			if(state == LANDED){
-	      		pub_empty_takeoff.publish(emp_msg);
+				pub_empty_takeoff.publish(emp_msg);
 			}
-	    	break;
-	    case Qt::Key_X:			//Land
+			break;
+		case Qt::Key_X:			//Land
 	    	/// - key X : Land \n
 			if(state == HOVERING){
-	    		pub_empty_land.publish(emp_msg);
+				pub_empty_land.publish(emp_msg);
 			}
-	      	break;
-	    case Qt::Key_C:			//Emergency
-	    	/// - key C : Emergency
-	    	pub_empty_reset.publish(emp_msg);
-	      	break;
+			break;
+		case Qt::Key_C:			//Emergency
+			/// - key C : Emergency
+			pub_empty_reset.publish(emp_msg);
+			break;
 		case Qt::Key_S:			//Move Backward
 			/// - key S : Move Backward
 			if(state == FLYING || FLYING2 || HOVERING){
@@ -130,7 +140,7 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 				twist_msg.linear.x = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
-	    	break;
+			break;
 		case Qt::Key_D:			//Move Right
 			/// - key D : Move Right
 			if(state == FLYING || FLYING2 || HOVERING){
