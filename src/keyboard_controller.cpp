@@ -40,7 +40,14 @@ keyboard_controller::keyboard_controller(ros::NodeHandle node){
 */
 keyboard_controller::~keyboard_controller(void){}
 
-
+/**
+ *	@brief Image Callback
+ *
+ *	This function convert the image to a cv::Mat objetct and then display it.
+ *	
+ *	@param msg A message of the type sensor_msgs::ImageConstPtr containing the image to display.
+ *	@see http://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#mat
+*/
 void keyboard_controller::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
 	cv::Mat img = cv_bridge::toCvShare(msg, "bgr8")->image;
@@ -60,6 +67,13 @@ void keyboard_controller::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 	}
 }
 
+/**
+ *	@brief Navigation Data Callback
+ *
+ *	This function takes the navigation data message and then diplay it.
+ *
+ *	@param data A message of the type adrone_autonomy::Navdata containing the data to display.
+*/
 void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data){
 	std::cout << "State: " << data.state << std::endl;
 	std::cout << "Battery: " << data.batteryPercent << std::endl;
@@ -83,78 +97,90 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
  *
  *	@param key Take the pointer to QKeyEvent class
  *	@see http://doc.qt.io/qt-5/qkeyevent.html
- *	@todo Documment switch case
- *
 */
 void keyboard_controller::keyPressEvent(QKeyEvent *key){
+	/// Switch Case key
 	switch(key->key()){
 		case Qt::Key_Z:			//Take off
+			/// - key Z : Take off \n
 			if(state == LANDED){
 	      		pub_empty_takeoff.publish(emp_msg);
 			}
 	    	break;
 	    case Qt::Key_X:			//Land
+	    	/// - key X : Land \n
 			if(state == HOVERING){
 	    		pub_empty_land.publish(emp_msg);
 			}
 	      	break;
 	    case Qt::Key_C:			//Emergency
+	    	/// - key C : Emergency
 	    	pub_empty_reset.publish(emp_msg);
 	      	break;
 		case Qt::Key_S:			//Move Backward
+			/// - key S : Move Backward
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.linear.x = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_W:			//Move Forward
+			/// - key W : Move Forward
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.linear.x = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 	    	break;
 		case Qt::Key_D:			//Move Right
+			/// - key D : Move Right
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.linear.y = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_A:			//Move Left
+			/// - key A : Move Left
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.linear.y = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_Q:			//Move Down
+			/// - key Q : Move Down
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.linear.z = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_E:			//Move Up
+			/// - key E : Move UP
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.linear.z = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_F:			//Turn Right
+			/// - key F : Turn Right
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.angular.z = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_R:			//Turn Left
+			/// - key R : Turn Left 
 			if(state == FLYING || FLYING2 || HOVERING){
 				twist_msg.angular.z = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
-		case Qt::Key_Plus:			//Turn Right
+		case Qt::Key_Plus:			//Increase Velocity
+			/// - key + : Increase Velocity
 			if(velocity < 1){
 				velocity += 0.1;
 			}
 			break;
-		case Qt::Key_Minus:			//Turn Left
+		case Qt::Key_Minus:			//Decrease Velocity
+			/// - key - : Decrease Velocity 
 			if(velocity > 0.1){
 				velocity -= 0.1;
 			}
@@ -165,10 +191,10 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 /**
  *	@brief Handle the Key Release Event
  *
+ *	This function publish a hover message when a key is released.
+ *
  *	@param key Take the pointer to QKeyEvent class
  *	@see http://doc.qt.io/qt-5/qkeyevent.html
- *	@todo Documment switch case
- *
 */	
 void keyboard_controller::keyReleaseEvent(QKeyEvent *key){
 	if(state == FLYING || FLYING2 || HOVERING){
