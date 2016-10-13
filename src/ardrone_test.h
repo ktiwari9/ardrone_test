@@ -6,6 +6,7 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 #include "ardrone_autonomy/Navdata.h"
+#include "ardrone_autonomy/navdata_gps.h"
 #include <std_msgs/Empty.h>
 #include <geometry_msgs/Twist.h>
 #include <image_transport/image_transport.h>
@@ -49,7 +50,7 @@ class keyboard_controller : public QWidget
 		~keyboard_controller(void);
 		void imageCallback(const sensor_msgs::ImageConstPtr& msg);
 		void navdataCallback(const ardrone_autonomy::Navdata& data);
-		void navdataGPSCallback(const ardrone_autonomy::Navdata_gps& data);
+		void navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data);
 
 	private:
 		int state;

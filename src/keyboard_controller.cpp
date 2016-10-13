@@ -1,17 +1,8 @@
 #include "ardrone_test.h"
-#include "keyboard_controller.moc"
+//#include "keyboard_controller.moc"
 
 static geometry_msgs::Twist hover;
 
-/**
- *	@brief Constructor
- *
- *	When a keyboard_controller is constructed, it creates some ros::Publisher classes and
- *	set some messages.
-
- *	@param node Takes the pointer to a ros::NodeHandle class in which will be advertised 
- *	some topics ("/cmd_vel", "/ardrone/takeoff", "/ardrone/land" and "/ardrone/reset" topics).
-*/
 keyboard_controller::keyboard_controller(ros::NodeHandle node){
 	state = 0;
 	velocity = 0.1;
@@ -74,8 +65,9 @@ void keyboard_controller::imageCallback(const sensor_msgs::ImageConstPtr& msg)
  *
  *	@param data A message of the type adrone_autonomy::Navdata containing the data to display.
 */
+
 void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data){
-	std::cout << "State: " << data.state << std::endl;
+	/*std::cout << "State: " << data.state << std::endl;
 	std::cout << "Battery: " << data.batteryPercent << std::endl;
 	std::cout << "Velocity: " << velocity << std::endl;
 	std::cout << "Rotacion Izquierta/derecha: " << data.rotX << std::endl;
@@ -86,9 +78,25 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
 	std::cout << "Velocidad lineal: vx: " << data.vx << "vy: " << data.ay << "vz: " << data.vz <<std::endl;
 	std::cout << "Aceleracion lineal: ax: " << data.ax << "ay: " << data.ay << "az: " << data.az <<std::endl;
 	std::cout << "Time stamp: " << data.tm << std::endl;
-	std::cout << std::string(25, '\n');
+	std::cout << std::string(25, '\n'); */
 	state = data.state;
 }
+
+/**
+ *	@brief Navigation Data Callback
+ *
+ *	This function takes the navigation data message and then diplay it.
+ *
+ *	@param data A message of the type adrone_autonomy::Navdata containing the data to display.
+*/
+
+void keyboard_controller::navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data){
+	std::cout << "Longitude: " << data.long0 << std::endl;
+	std::cout << "Latitude: " << data.lat0 << std::endl;
+	std::cout << "Elevation: " << data.elevation << std::endl;
+	std::cout << std::string(25, '\n');
+}
+
 
 /* NOT TESTED
 void keyboard_controller::navdataGPSCallback(const ardrone_autonomy::Navdata_gps& data){
