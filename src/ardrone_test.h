@@ -21,7 +21,6 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QApplication>
-
 /*Definitions*/
 
 

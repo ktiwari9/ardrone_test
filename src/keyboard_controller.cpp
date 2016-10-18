@@ -4,6 +4,7 @@
 static geometry_msgs::Twist hover;
 
 keyboard_controller::keyboard_controller(ros::NodeHandle node){
+	
 	state = 0;
 	velocity = 0.1;
 	auto_pilot = 0;
@@ -91,7 +92,7 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
 	temp 	=	data.temp;
 	altd 	=	data.altd;
 	vx 		=	data.vx;
-	vy 		= 	data.ay; 
+	vy 		= 	data.vy; 
 	vz		=	data.vz;
 	ax 		= 	data.ax; 
 	ay 		=	data.ay; 
@@ -122,8 +123,8 @@ void keyboard_controller::navdata_gps_Callback(const ardrone_autonomy::navdata_g
 	std::cout << "Orientacion: " << rotZ << std::endl;
 	std::cout << "Temperatura: " << temp << std::endl;
 	std::cout << "Altura estimada: " << altd << std::endl;
-	std::cout << "Velocidad lineal: vx: " << vx << "vy: " << ay << "vz: " << vz << std::endl;
-	std::cout << "Aceleracion lineal: ax: " << ax << "ay: " << ay << "az: " << az << std::endl;
+	std::cout << "Velocidad lineal: vx: " << vx << " vy: " << ay << " vz: " << vz << std::endl;
+	std::cout << "Aceleracion lineal: ax: " << ax << " ay: " << ay << " az: " << az << std::endl;
 	std::cout << "Time stamp: " << tm << std::endl;
 	std::cout << "Longitude: " << long0 << std::endl;
 	std::cout << "Latitude: " << lat0 << std::endl;
@@ -149,10 +150,9 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 	else if(key->key() == Qt::Key_Space){			//Emergency
 		/// - key Space : Emergency
 		pub_empty_reset.publish(emp_msg);
-		break;
 	}
 	
-		
+
 	if(auto_pilot == AUTO_PILOT_DIS){
 	/// Switch Case key
 	switch(key->key()){
