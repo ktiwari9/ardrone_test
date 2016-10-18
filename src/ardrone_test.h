@@ -25,15 +25,17 @@
 /*Definitions*/
 
 
-#define UNKNOW 		0
-#define INITED		1
-#define LANDED 		2
-#define FLYING 		3
-#define HOVERING	4
-#define TEST 		5
-#define TAKINGOFF	6
-#define FLYING2		7
-#define LOOPING		8
+#define UNKNOW 			0
+#define INITED			1
+#define LANDED 			2
+#define FLYING 			3
+#define HOVERING		4
+#define TEST 			5
+#define TAKINGOFF		6
+#define FLYING2			7
+#define LOOPING			8
+#define AUTO_PILOT_EN 	1
+#define AUTO_PILOT_DIS 	0
 
 /*Class definitions */
 /**
@@ -55,13 +57,30 @@ class keyboard_controller : public QWidget
 	private:
 		int state;
 		float velocity;
+		int auto_pilot;
+		double battery;
+		double rotX;
+		double rotY;
+		double rotZ;
+		int temp;
+		int altd;
+		double vx;
+		double vy; 
+		double vz;
+		double ax; 
+		double ay; 
+		double az;
+		double tm;
+		double long0;
+		double lat0;
+		double elevation;
 		geometry_msgs::Twist twist_msg;
 		std_msgs::Empty emp_msg;
 		ros::Publisher pub_empty_land;
 		ros::Publisher pub_twist;
 		ros::Publisher pub_empty_takeoff;
 		ros::Publisher pub_empty_reset;
-		void keyPressEvent(QKeyEvent* e);
+		void keyPressEvent(QKeyEvent *key);
 		void keyReleaseEvent(QKeyEvent *key);
 };
 

@@ -6,6 +6,23 @@ static geometry_msgs::Twist hover;
 keyboard_controller::keyboard_controller(ros::NodeHandle node){
 	state = 0;
 	velocity = 0.1;
+	auto_pilot = 0;
+	battery = 0;
+	rotX 	= 0;
+	rotY	= 0;
+	rotZ	= 0;
+	temp 	= 0;
+	altd 	= 0;
+	vx 		= 0;
+	vy 		= 0; 
+	vz		= 0;
+	ax 		= 0; 
+	ay 		= 0; 
+	az		= 0;
+	tm 		= 0;
+	long0	= 0;
+	lat0	= 0;
+	elevation =	0;
 	pub_twist = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 	pub_empty_takeoff = node.advertise<std_msgs::Empty>("/ardrone/takeoff", 1); 
 	pub_empty_land = node.advertise<std_msgs::Empty>("/ardrone/land", 1);
@@ -67,19 +84,20 @@ void keyboard_controller::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 */
 
 void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data){
-	/*std::cout << "State: " << data.state << std::endl;
-	std::cout << "Battery: " << data.batteryPercent << std::endl;
-	std::cout << "Velocity: " << velocity << std::endl;
-	std::cout << "Rotacion Izquierta/derecha: " << data.rotX << std::endl;
-	std::cout << "Rotacion adelante/atras: " << data.rotY << std::endl;
-	std::cout << "Orientacion: " << data.rotZ << std::endl;
-	std::cout << "Temperatura: " << data.temp << std::endl;
-	std::cout << "Altura estimada: " << data.altd << std::endl;
-	std::cout << "Velocidad lineal: vx: " << data.vx << "vy: " << data.ay << "vz: " << data.vz <<std::endl;
-	std::cout << "Aceleracion lineal: ax: " << data.ax << "ay: " << data.ay << "az: " << data.az <<std::endl;
-	std::cout << "Time stamp: " << data.tm << std::endl;
-	std::cout << std::string(25, '\n'); */
-	state = data.state;
+	battery = 	data.batteryPercent;
+	rotX 	= 	data.rotX;
+	rotY	=	data.rotY;
+	rotZ	=	data.rotZ;
+	temp 	=	data.temp;
+	altd 	=	data.altd;
+	vx 		=	data.vx;
+	vy 		= 	data.ay; 
+	vz		=	data.vz;
+	ax 		= 	data.ax; 
+	ay 		=	data.ay; 
+	az		=	data.az;
+	tm 		=	data.tm;
+	state 	=	data.state;
 }
 
 /**
@@ -91,22 +109,27 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
 */
 
 void keyboard_controller::navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data){
-	std::cout << "Longitude: " << data.long0 << std::endl;
-	std::cout << "Latitude: " << data.lat0 << std::endl;
-	std::cout << "Elevation: " << data.elevation << std::endl;
+	long0 		= 	data.long0;
+	lat0		=	data.lat0;
+	elevation 	=	data.elevation;
+
+	std::cout << "State: " << state << std::endl;
+	std::cout << "AutoPilot: " << auto_pilot << std::endl;
+	std::cout << "Battery: " << battery << std::endl;
+	std::cout << "Velocity: " << velocity << std::endl;
+	std::cout << "Rotacion Izquierta/derecha: " << rotX << std::endl;
+	std::cout << "Rotacion adelante/atras: " << rotY << std::endl;
+	std::cout << "Orientacion: " << rotZ << std::endl;
+	std::cout << "Temperatura: " << temp << std::endl;
+	std::cout << "Altura estimada: " << altd << std::endl;
+	std::cout << "Velocidad lineal: vx: " << vx << "vy: " << ay << "vz: " << vz << std::endl;
+	std::cout << "Aceleracion lineal: ax: " << ax << "ay: " << ay << "az: " << az << std::endl;
+	std::cout << "Time stamp: " << tm << std::endl;
+	std::cout << "Longitude: " << long0 << std::endl;
+	std::cout << "Latitude: " << lat0 << std::endl;
+	std::cout << "Elevation: " << elevation << std::endl;
 	std::cout << std::string(25, '\n');
 }
-
-
-/* NOT TESTED
-void keyboard_controller::navdataGPSCallback(const ardrone_autonomy::Navdata_gps& data){
-	std::cout << "Longitude: " << data->longitude << std::endl;
-	std::cout << "Latitude: " << data->latitude << std::endl;
-	std::cout << "Elevation: " << data->elevation << std::endl;
-
-	std::cout << std::string(25, '\n');
-}
-*/
 
 /**
  *	@brief Handle the Key Press Event
@@ -117,6 +140,20 @@ void keyboard_controller::navdataGPSCallback(const ardrone_autonomy::Navdata_gps
  *	@see http://doc.qt.io/qt-5/qkeyevent.html
 */
 void keyboard_controller::keyPressEvent(QKeyEvent *key){
+	
+	if(key->key() == Qt::Key_Enter){
+		/// - key Enter: Recover manual control
+		auto_pilot = AUTO_PILOT_DIS;
+	}
+
+	else if(key->key() == Qt::Key_Space){			//Emergency
+		/// - key Space : Emergency
+		pub_empty_reset.publish(emp_msg);
+		break;
+	}
+	
+		
+	if(auto_pilot == AUTO_PILOT_DIS){
 	/// Switch Case key
 	switch(key->key()){
 		case Qt::Key_Z:			//Take off
@@ -127,66 +164,63 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 			break;
 		case Qt::Key_X:			//Land
 	    	/// - key X : Land \n
-			if(state == HOVERING){
+			if(state == FLYING || state == FLYING2 ||state == HOVERING){
 				pub_empty_land.publish(emp_msg);
 			}
 			break;
-		case Qt::Key_C:			//Emergency
-			/// - key C : Emergency
-			pub_empty_reset.publish(emp_msg);
-			break;
+		
 		case Qt::Key_S:			//Move Backward
 			/// - key S : Move Backward
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.linear.x = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_W:			//Move Forward
 			/// - key W : Move Forward
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.linear.x = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_D:			//Move Right
 			/// - key D : Move Right
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.linear.y = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_A:			//Move Left
 			/// - key A : Move Left
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.linear.y = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_Q:			//Move Down
 			/// - key Q : Move Down
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.linear.z = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_E:			//Move Up
 			/// - key E : Move UP
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.linear.z = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_F:			//Turn Right
 			/// - key F : Turn Right
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.angular.z = -velocity;
 	      		pub_twist.publish(twist_msg);
 			}
 			break;
 		case Qt::Key_R:			//Turn Left
 			/// - key R : Turn Left 
-			if(state == FLYING || FLYING2 || HOVERING){
+			if(state == FLYING || state == FLYING2 || state == HOVERING){
 				twist_msg.angular.z = velocity;
 	      		pub_twist.publish(twist_msg);
 			}
@@ -199,10 +233,11 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 			break;
 		case Qt::Key_Minus:			//Decrease Velocity
 			/// - key - : Decrease Velocity 
-			if(velocity > 0.1){
+			if(velocity >= 0.2){
 				velocity -= 0.1;
 			}
 			break;	
+	}
 	}
 }
 
@@ -214,8 +249,9 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
  *	@param key Take the pointer to QKeyEvent class
  *	@see http://doc.qt.io/qt-5/qkeyevent.html
 */	
+
 void keyboard_controller::keyReleaseEvent(QKeyEvent *key){
-	if(state == FLYING || FLYING2 || HOVERING){
+	if(state == FLYING || state == FLYING2 || state == HOVERING){
 		twist_msg.linear.x=0.0; 
 		twist_msg.linear.y=0.0;
 		twist_msg.linear.z=0.0;
