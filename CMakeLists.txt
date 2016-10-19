@@ -27,11 +27,12 @@ include_directories(
 
 
 
-add_executable(main src/main.cpp src/keyboard_controller.cpp)
+add_executable(main src/main.cpp src/keyboard_controller.cpp src/gps_ang_dist.cpp)
 
 target_link_libraries(
   main ${catkin_LIBRARIES}
 )
+
 target_link_libraries(main Qt5::Widgets)
 install(TARGETS main
 RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

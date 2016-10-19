@@ -21,6 +21,8 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QApplication>
+#include "gps_ang_dist.h"
+
 /*Definitions*/
 
 
@@ -52,6 +54,9 @@ class keyboard_controller : public QWidget
 		void imageCallback(const sensor_msgs::ImageConstPtr& msg);
 		void navdataCallback(const ardrone_autonomy::Navdata& data);
 		void navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data);
+		void set_dest_coordinates(double dest_latitude, double dest_longitude, double dest_elev);
+		void gps_auto_pilot(int EnableAutoPilot);
+		void print_info(void);
 
 	private:
 		int state;
@@ -73,6 +78,11 @@ class keyboard_controller : public QWidget
 		double long0;
 		double lat0;
 		double elevation;
+		double dest_long0;
+		double dest_lat0;
+		double dest_elevation;
+		double dist_to_target;
+		double comp_ang_to_target;
 		geometry_msgs::Twist twist_msg;
 		std_msgs::Empty emp_msg;
 		ros::Publisher pub_empty_land;

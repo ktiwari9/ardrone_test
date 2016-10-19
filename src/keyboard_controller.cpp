@@ -4,7 +4,6 @@
 static geometry_msgs::Twist hover;
 
 keyboard_controller::keyboard_controller(ros::NodeHandle node){
-	
 	state = 0;
 	velocity = 0.1;
 	auto_pilot = 0;
@@ -23,7 +22,12 @@ keyboard_controller::keyboard_controller(ros::NodeHandle node){
 	tm 		= 0;
 	long0	= 0;
 	lat0	= 0;
-	elevation =	0;
+	elevation 		=	0;
+	dest_long0		= 	0;
+	dest_lat0		= 	0;
+	dest_elevation 	=	0;
+	dist_to_target	=	0;
+	comp_ang_to_target = 0;
 	pub_twist = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 	pub_empty_takeoff = node.advertise<std_msgs::Empty>("/ardrone/takeoff", 1); 
 	pub_empty_land = node.advertise<std_msgs::Empty>("/ardrone/land", 1);
@@ -48,6 +52,27 @@ keyboard_controller::keyboard_controller(ros::NodeHandle node){
  *	Do nothing.
 */
 keyboard_controller::~keyboard_controller(void){}
+
+/**
+ *	@brief GPS basic waypoint
+ *
+ *
+*/
+
+void keyboard_controller::set_dest_coordinates(double dest_latitude, double dest_longitude, double dest_elev){
+	dest_long0 	= dest_longitude;
+	dest_lat0 	= dest_latitude;
+	dest_elevation = dest_elev;	
+	dist_to_target = CoordinatesToMeters(lat0, long0, dest_lat0, dest_long0);
+	comp_ang_to_target = CoordinatesToAngle(lat0, long0, dest_lat0, dest_long0);
+	this->print_info();
+}
+
+void keyboard_controller::gps_auto_pilot(int EnableAutoPilot){
+	this->print_info();
+}
+
+
 
 /**
  *	@brief Image Callback
@@ -110,26 +135,10 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
 */
 
 void keyboard_controller::navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data){
-	long0 		= 	data.long0;
-	lat0		=	data.lat0;
+	long0 		= 	data.latitude;
+	lat0		=	data.longitude;
 	elevation 	=	data.elevation;
-
-	std::cout << "State: " << state << std::endl;
-	std::cout << "AutoPilot: " << auto_pilot << std::endl;
-	std::cout << "Battery: " << battery << std::endl;
-	std::cout << "Velocity: " << velocity << std::endl;
-	std::cout << "Rotacion Izquierta/derecha: " << rotX << std::endl;
-	std::cout << "Rotacion adelante/atras: " << rotY << std::endl;
-	std::cout << "Orientacion: " << rotZ << std::endl;
-	std::cout << "Temperatura: " << temp << std::endl;
-	std::cout << "Altura estimada: " << altd << std::endl;
-	std::cout << "Velocidad lineal: vx: " << vx << " vy: " << ay << " vz: " << vz << std::endl;
-	std::cout << "Aceleracion lineal: ax: " << ax << " ay: " << ay << " az: " << az << std::endl;
-	std::cout << "Time stamp: " << tm << std::endl;
-	std::cout << "Longitude: " << long0 << std::endl;
-	std::cout << "Latitude: " << lat0 << std::endl;
-	std::cout << "Elevation: " << elevation << std::endl;
-	std::cout << std::string(25, '\n');
+	this->set_dest_coordinates(-32.930563, -71.519423, 80);
 }
 
 /**
@@ -260,4 +269,28 @@ void keyboard_controller::keyReleaseEvent(QKeyEvent *key){
 		twist_msg.angular.z=0.0;
 		pub_twist.publish(hover);
 	}
+}
+
+void keyboard_controller::print_info(void){
+	std::cout << "State: " << state << std::endl;
+	std::cout << "AutoPilot: " << auto_pilot << std::endl;
+	std::cout << "Battery: " << battery << std::endl;
+	std::cout << "Velocity: " << velocity << std::endl;
+	std::cout << "Rotacion Izquierta/derecha: " << rotX << std::endl;
+	std::cout << "Rotacion adelante/atras: " << rotY << std::endl;
+	std::cout << "Orientacion: " << rotZ << std::endl;
+	std::cout << "Temperatura: " << temp << std::endl;
+	std::cout << "Altura estimada: " << altd << std::endl;
+	std::cout << "Velocidad lineal: \n\tvx: " << vx << " \n\tvy: " << ay << " \n\tvz: " << vz << std::endl;
+	std::cout << "Aceleracion lineal: \n\tax: " << ax << " \n\tay: " << ay << " \n\taz: " << az << std::endl;
+	std::cout << "Time stamp: " << tm << std::endl;
+	std::cout << "Longitude: " << long0 << std::endl;
+	std::cout << "Latitude: " << lat0 << std::endl;
+	std::cout << "Elevation: " << elevation << std::endl;
+	std::cout << "Target Longitude: " << dest_long0 << std::endl;
+	std::cout << "Target Latitude: " << dest_lat0 << std::endl;
+	std::cout << "Target Elevation: " << dest_elevation << std::endl;	
+	std::cout << "Distance to target: " << dist_to_target << std::endl;
+	std::cout << "Compensation Angle to target" << comp_ang_to_target << std::endl;
+	std::cout << std::string(50, '\n');
 }
