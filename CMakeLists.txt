@@ -25,9 +25,8 @@ include_directories(
    LIBRARIES ${PROJECT_NAME}
 )
 
-
-
 add_executable(main src/main.cpp src/keyboard_controller.cpp src/gps_ang_dist.cpp)
+add_definitions(-std=c++11)
 
 target_link_libraries(
   main ${catkin_LIBRARIES}

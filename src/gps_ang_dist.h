@@ -6,12 +6,12 @@
 double degreeToRadian (double degree);
 double radianToDegree (double radian);
 
-double CoordinatesToAngle (const double latitude1,
-                           const double longitude1,
-                           const double latitude2,
-                           const double longitude2);
+double CoordinatesToAngle(  const double latitude1,
+                            const double longitude1,
+                            const double latitude2,
+                            const double longitude2);
 
-double CoordinatesToMeters (const double latitude1,
+double CoordinatesToMeters( const double latitude1,
                             const double longitude1,
                             const double latitude2,
                             const double longitude2);

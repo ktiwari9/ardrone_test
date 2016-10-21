@@ -28,10 +28,6 @@ keyboard_controller::keyboard_controller(ros::NodeHandle node){
 	dest_elevation 	=	0;
 	dist_to_target	=	0;
 	comp_ang_to_target = 0;
-	pub_twist = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-	pub_empty_takeoff = node.advertise<std_msgs::Empty>("/ardrone/takeoff", 1); 
-	pub_empty_land = node.advertise<std_msgs::Empty>("/ardrone/land", 1);
-	pub_empty_reset = node.advertise<std_msgs::Empty>("/ardrone/reset", 1); 
 	twist_msg.linear.x=0.0; 
 	twist_msg.linear.y=0.0;
 	twist_msg.linear.z=0.0;
@@ -44,6 +40,10 @@ keyboard_controller::keyboard_controller(ros::NodeHandle node){
 	hover.angular.x=0.0; 
 	hover.angular.y=0.0;
 	hover.angular.z=0.0;
+	pub_twist = node.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
+	pub_empty_takeoff = node.advertise<std_msgs::Empty>("/ardrone/takeoff", 1); 
+	pub_empty_land = node.advertise<std_msgs::Empty>("/ardrone/land", 1);
+	pub_empty_reset = node.advertise<std_msgs::Empty>("/ardrone/reset", 1); 
 }
 
 /**
@@ -60,16 +60,30 @@ keyboard_controller::~keyboard_controller(void){}
 */
 
 void keyboard_controller::set_dest_coordinates(double dest_latitude, double dest_longitude, double dest_elev){
-	dest_long0 	= dest_longitude;
-	dest_lat0 	= dest_latitude;
-	dest_elevation = dest_elev;	
-	dist_to_target = CoordinatesToMeters(lat0, long0, dest_lat0, dest_long0);
-	comp_ang_to_target = CoordinatesToAngle(lat0, long0, dest_lat0, dest_long0);
-	this->print_info();
+	dest_long0			= dest_longitude;
+	dest_lat0			= dest_latitude;
+	dest_elevation		= dest_elev;	
+	dist_to_target		= CoordinatesToMeters(lat0, long0, dest_lat0, dest_long0);
+	comp_ang_to_target	= CoordinatesToAngle(lat0, long0, dest_lat0, dest_long0);
+	//this->print_info();
 }
 
-void keyboard_controller::gps_auto_pilot(int EnableAutoPilot){
-	this->print_info();
+
+void keyboard_controller::gps_init(void){
+	std::thread gps_thread(&keyboard_controller::gps_auto_pilot, this);
+	gps_thread.detach();
+}
+
+void keyboard_controller::gps_auto_pilot(void){
+//	std::mutex mtx;
+
+//	mtx.lock();
+	this->set_dest_coordinates(-33.0347953, -71.5939068, 40);
+	while(auto_pilot){
+		this->print_info();
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
+//	mtx.unlock();
 }
 
 
@@ -135,10 +149,9 @@ void keyboard_controller::navdataCallback(const ardrone_autonomy::Navdata& data)
 */
 
 void keyboard_controller::navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data){
-	long0 		= 	data.latitude;
-	lat0		=	data.longitude;
+	long0 		= 	data.long0;
+	lat0		=	data.lat0;
 	elevation 	=	data.elevation;
-	this->set_dest_coordinates(-32.930563, -71.519423, 80);
 }
 
 /**
@@ -151,7 +164,7 @@ void keyboard_controller::navdata_gps_Callback(const ardrone_autonomy::navdata_g
 */
 void keyboard_controller::keyPressEvent(QKeyEvent *key){
 	
-	if(key->key() == Qt::Key_Enter){
+	if(key->key() == Qt::Key_O){ //M de manual	
 		/// - key Enter: Recover manual control
 		auto_pilot = AUTO_PILOT_DIS;
 	}
@@ -160,7 +173,12 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 		/// - key Space : Emergency
 		pub_empty_reset.publish(emp_msg);
 	}
-	
+
+	else if(key->key() == Qt::Key_P){			
+			/// - key P : Start autopilot
+		(* this).gps_init();
+		auto_pilot = AUTO_PILOT_EN;
+	}	
 
 	if(auto_pilot == AUTO_PILOT_DIS){
 	/// Switch Case key
@@ -276,13 +294,12 @@ void keyboard_controller::print_info(void){
 	std::cout << "AutoPilot: " << auto_pilot << std::endl;
 	std::cout << "Battery: " << battery << std::endl;
 	std::cout << "Velocity: " << velocity << std::endl;
-	std::cout << "Rotacion Izquierta/derecha: " << rotX << std::endl;
-	std::cout << "Rotacion adelante/atras: " << rotY << std::endl;
-	std::cout << "Orientacion: " << rotZ << std::endl;
-	std::cout << "Temperatura: " << temp << std::endl;
-	std::cout << "Altura estimada: " << altd << std::endl;
-	std::cout << "Velocidad lineal: \n\tvx: " << vx << " \n\tvy: " << ay << " \n\tvz: " << vz << std::endl;
-	std::cout << "Aceleracion lineal: \n\tax: " << ax << " \n\tay: " << ay << " \n\taz: " << az << std::endl;
+	std::cout << "Roll Angle(X): " << rotX << std::endl;
+	std::cout << "Pitch Angle(Y): " << rotY << std::endl;
+	std::cout << "Yaw Angle(Z): " << rotZ << std::endl;
+	std::cout << "Stimated altitude: " << altd << std::endl;
+	std::cout << "Linear velocity: \n\tvx: " << vx << " \n\tvy: " << ay << " \n\tvz: " << vz << std::endl;
+	std::cout << "Linear Acceleration: \n\tax: " << ax << " \n\tay: " << ay << " \n\taz: " << az << std::endl;
 	std::cout << "Time stamp: " << tm << std::endl;
 	std::cout << "Longitude: " << long0 << std::endl;
 	std::cout << "Latitude: " << lat0 << std::endl;
@@ -291,6 +308,6 @@ void keyboard_controller::print_info(void){
 	std::cout << "Target Latitude: " << dest_lat0 << std::endl;
 	std::cout << "Target Elevation: " << dest_elevation << std::endl;	
 	std::cout << "Distance to target: " << dist_to_target << std::endl;
-	std::cout << "Compensation Angle to target" << comp_ang_to_target << std::endl;
-	std::cout << std::string(50, '\n');
+	std::cout << "Compensation Angle to target: " << comp_ang_to_target << std::endl;
+	std::cout << std::string(14, '\n');
 }

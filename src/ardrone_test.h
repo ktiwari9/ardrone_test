@@ -17,16 +17,19 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <chrono>
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QApplication>
+#include <thread>
+#include <mutex>
 #include "gps_ang_dist.h"
 
 /*Definitions*/
 
 
-#define UNKNOW 			0
+#define UNKNOW 			0		
 #define INITED			1
 #define LANDED 			2
 #define FLYING 			3
@@ -35,8 +38,8 @@
 #define TAKINGOFF		6
 #define FLYING2			7
 #define LOOPING			8
-#define AUTO_PILOT_EN 	1
-#define AUTO_PILOT_DIS 	0
+#define AUTO_PILOT_EN 	true
+#define AUTO_PILOT_DIS 	false
 
 /*Class definitions */
 /**
@@ -55,13 +58,14 @@ class keyboard_controller : public QWidget
 		void navdataCallback(const ardrone_autonomy::Navdata& data);
 		void navdata_gps_Callback(const ardrone_autonomy::navdata_gps& data);
 		void set_dest_coordinates(double dest_latitude, double dest_longitude, double dest_elev);
-		void gps_auto_pilot(int EnableAutoPilot);
+		void gps_init();
+		void gps_auto_pilot();
 		void print_info(void);
 
 	private:
 		int state;
 		float velocity;
-		int auto_pilot;
+		bool auto_pilot;
 		double battery;
 		double rotX;
 		double rotY;
@@ -83,6 +87,7 @@ class keyboard_controller : public QWidget
 		double dest_elevation;
 		double dist_to_target;
 		double comp_ang_to_target;
+		std::thread gps_thread;
 		geometry_msgs::Twist twist_msg;
 		std_msgs::Empty emp_msg;
 		ros::Publisher pub_empty_land;
