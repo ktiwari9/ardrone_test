@@ -20,8 +20,9 @@ double CoordinatesToAngle (const double latitude1,
   double x =  std::cos(latitude1Radian) * std::sin(latitude2Radian)
               - std::sin(latitude1Radian) * std::cos(latitude2Radian) * std::cos(longitudeDifferenceRadians);
 
-  double brng = std::atan2(y,x);
-  return radianToDegree(brng);
+  double brng     = std::atan2(y,x);
+  double brng_deg = radianToDegree(brng);
+  return brng_deg > 180 ? brng_deg - 360   : brng_deg;
 }
 
 double CoordinatesToMeters (const double latitude1,
