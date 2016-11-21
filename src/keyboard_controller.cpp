@@ -45,7 +45,7 @@ keyboard_controller::keyboard_controller(ros::NodeHandle node){
 	pub_empty_takeoff		= node.advertise<std_msgs::Empty>("/ardrone/takeoff", 1); 
 	pub_empty_land			= node.advertise<std_msgs::Empty>("/ardrone/land", 1);
 	pub_empty_reset			= node.advertise<std_msgs::Empty>("/ardrone/reset", 1);
-	img 					= cv::Mat(cv::Size(), cv::CV_8UC3);
+	photo 					= cv::Mat(cv::Size(640,480), CV_8UC3);
 }
 
 /**
@@ -132,7 +132,11 @@ void keyboard_controller::Rotate(double grades){
 }
 
 void keyboard_controller::Photo360(){
-
+	for(int i = 0; i < 72; i++){
+		//this->Rotate(5);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		cv::imwrite(cv::format("~/Desktop/Photos/%d.png",i),this->photo);
+	}
 }
 
 void keyboard_controller::microAngleComp(){
@@ -249,6 +253,7 @@ void keyboard_controller::imageCallback(const sensor_msgs::ImageConstPtr& msg)
 	cv::putText(img, ts, cv::Point(10,10), CV_FONT_HERSHEY_PLAIN, 1, cv::Scalar(94.0, 206.0, 165.0, 0.0))	;
 	try
 	{
+		this->photo = img;
 		cv::imshow("view", img);
 		cv::waitKey(30);
 	}
@@ -335,7 +340,10 @@ void keyboard_controller::keyPressEvent(QKeyEvent *key){
 		auto_pilot = AUTO_PILOT_EN;
 		(* this).gps_init();
 	}	
-
+	else if(key->key() == Qt::Key_K){			
+			/// - key P : Start autopilot
+		this->Photo360();
+	}	
 	if(auto_pilot == AUTO_PILOT_DIS){
 	/// Switch Case key
 	switch(key->key()){

@@ -105,7 +105,7 @@ class keyboard_controller : public QWidget
 		ros::Publisher pub_twist;
 		ros::Publisher pub_empty_takeoff;
 		ros::Publisher pub_empty_reset;
-		cv::Mat img();
+		cv::Mat photo;
 		void keyPressEvent(QKeyEvent *key);
 		void keyReleaseEvent(QKeyEvent *key);
 };
