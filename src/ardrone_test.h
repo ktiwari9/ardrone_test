@@ -68,6 +68,7 @@ class keyboard_controller : public QWidget
 		//void set_dest_coordinates(double dest_latitude, double dest_longitude, double dest_elev);
 		void gps_init();
 		void gps_auto_pilot();
+		void Photo360();
 		void print_info(void);
 
 	private:
@@ -104,6 +105,7 @@ class keyboard_controller : public QWidget
 		ros::Publisher pub_twist;
 		ros::Publisher pub_empty_takeoff;
 		ros::Publisher pub_empty_reset;
+		cv::Mat img();
 		void keyPressEvent(QKeyEvent *key);
 		void keyReleaseEvent(QKeyEvent *key);
 };
